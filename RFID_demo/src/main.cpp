@@ -2,13 +2,13 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-#define SDA 2
 #define SCK 18
 #define MOSI 23
 #define MISO 19
+#define SS_PIN 2
 #define RST_PIN 4
 
-MFRC522 mfrc522(SDA, RST_PIN);
+MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 const int buzzer = 5;
 

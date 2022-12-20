@@ -23,7 +23,7 @@ class StudentController
     private function getStudent()
     {
         // GET RFID PARAMETER
-        // http://192.168.1.56/iot_lab/api/v1/student/?rfid=12345678
+        // http://192.168.1.56/iot_lab/api/v1/student/?rfid=331d3090
         $rfid = $_GET["rfid"];
         // echo $rfid;
 
