@@ -12,7 +12,7 @@ try {
     $hostname = "127.0.0.1";
     $db_name = "iot_lab";
     $username = "root";
-    $password = "";
+    $password = "Testing321";
 
     $dsn = "mysql:host=$hostname;dbname=$db_name;charset=utf8mb4";
     $options = [
@@ -39,7 +39,7 @@ try {
 $method = $_SERVER["REQUEST_METHOD"];
 
 if ($method == "GET") {
-    // GET RFID PARAMETER
+    // GET 'rfid PARAMETER
     $rfid = $_GET["rfid"];
     // echo $rfid;
 
@@ -49,6 +49,14 @@ if ($method == "GET") {
     $result = $stmt->fetch();
     $stmt->closeCursor();
 
-    http_response_code(200);
+    if (!$result) {  // $result = false
+        http_response_code(404);
+
+        $empty = json_decode("{}");
+        echo json_encode($empty); // "{}"
+
+        exit();
+    }
+
     echo json_encode($result);
 }
