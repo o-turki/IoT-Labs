@@ -2,41 +2,53 @@
 
 date_default_timezone_set("Africa/Tunis");
 
-require __DIR__ . "./src/config/Database.php";
-require __DIR__ . "./src/controllers/StudentController.php";
-
-// JSON HEADERS
+// JSON's HEADERS
 header("Access-Control-Allow-Origin: *");
 header("Content-type: application/json; charset=UTF-8");
 
 
-// SPLIT URI(/URL) BY / INTO PARTS (LIST)
-// echo $_SERVER["REQUEST_URI"];
-$parts = explode("/", $_SERVER["REQUEST_URI"]);
-// print_r($parts);
+// TRY TO CONNECT TO THE DATABASE
+try {
+    $hostname = "127.0.0.1";
+    $db_name = "iot_lab";
+    $username = "root";
+    $password = "";
 
-// EXAMPLE:     http://192.168.1.56/iot_lab/api/v1/student/
-//              => $resource = student
+    $dsn = "mysql:host=$hostname;dbname=$db_name;charset=utf8mb4";
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+    ];
 
-$resource = $parts[4] ?? null;
-// echo $resource;
+    $conn = new PDO($dsn, $username, $password, $options);
+} catch (PDOException $e) {
+    // HTTP 500: Internal server error
+    http_response_code(500);
+
+    echo json_encode([
+        "error" => "Connection failed",
+        "message" => $e->getMessage()
+    ]);
+
+    exit();
+}
 
 
-// INITIALIZE DB
-$db = new Database("127.0.0.1", "iot_lab", "root", "");
+// EXAMPLE: http://192.168.1.56/iot_lab/?rfid=12345678
 
+$method = $_SERVER["REQUEST_METHOD"];
 
-// INITIALIZE MODELS
-$student = new Student($db);
+if ($method == "GET") {
+    // GET RFID PARAMETER
+    $rfid = $_GET["rfid"];
+    // echo $rfid;
 
+    $sql = "SELECT * FROM `student` WHERE `rfid` = :rfid";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([":rfid" => $rfid]);
+    $result = $stmt->fetch();
+    $stmt->closeCursor();
 
-// INITIALIZE CONTROLLERS
-$studentController = new StudentController($student);
-
-
-// ROUTING
-switch ($resource) {
-    case "student":
-        $studentController->processRequest();
-        break;
+    http_response_code(200);
+    echo json_encode($result);
 }
