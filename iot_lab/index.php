@@ -12,7 +12,7 @@ try {
     $hostname = "127.0.0.1";
     $db_name = "iot_lab";
     $username = "root";
-    $password = "Testing321";
+    $password = "";
 
     $dsn = "mysql:host=$hostname;dbname=$db_name;charset=utf8mb4";
     $options = [
