@@ -4,18 +4,6 @@
 const char *ssid = "o-turki";      // "REPLACE_WITH_YOUR_SSID"
 const char *password = "01234567"; // "REPLACE_WITH_YOUR_PASSWORD"
 
-void connect2Network();
-
-void setup()
-{
-  Serial.begin(115200);
-
-  // Connect to Network
-  connect2Network();
-}
-
-void loop() {}
-
 void connect2Network()
 {
   WiFi.mode(WIFI_STA);
@@ -28,10 +16,20 @@ void connect2Network()
     delay(1000);
   }
 
-  Serial.println("");
-  Serial.println("================================================================================");
+  // Serial.println("\n");
+  Serial.println("\n================================================================================");
   Serial.println("> Connected to WiFi network \"" + WiFi.SSID() + "\"");
   Serial.println("> IP Address: " + WiFi.localIP().toString());
   Serial.println("> MAC Address: " + WiFi.macAddress());
   Serial.println("================================================================================");
 }
+
+void setup()
+{
+  Serial.begin(115200);
+
+  // Connect to Network
+  connect2Network();
+}
+
+void loop() {}
