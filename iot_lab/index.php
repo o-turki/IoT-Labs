@@ -29,13 +29,11 @@ try {
         "error" => "Connection failed",
         "message" => $e->getMessage()
     ]);
-
     exit();
 }
 
 
 // EXAMPLE: http://192.168.1.56/iot_lab/?rfid=12345678
-
 $method = $_SERVER["REQUEST_METHOD"];
 
 if ($method == "GET") {
@@ -43,7 +41,7 @@ if ($method == "GET") {
     $rfid = $_GET["rfid"];
     // echo $rfid;
 
-    $sql = "SELECT * FROM `student` WHERE `rfid` = :rfid";
+    $sql = "SELECT * FROM `student` WHERE `rfid` = :rfid;";
     $stmt = $conn->prepare($sql);
     $stmt->execute([":rfid" => $rfid]);
     $result = $stmt->fetch();
@@ -54,9 +52,31 @@ if ($method == "GET") {
 
         $empty = json_decode("{}");
         echo json_encode($empty); // "{}"
-
         exit();
     }
 
     echo json_encode($result);
+} else if ($method == "POST") {
+    $data = (array) json_decode(file_get_contents("php://input"), true);
+
+    $firstName = $data["first_name"];
+    $lastName = $data["last_name"];
+    $currentDay = date("d/m/Y");
+    $currentTime = date("H:i:s");
+
+    $sql = "INSERT INTO `presence`
+                (`first_name`, `last_name`, `cur_day`, `cur_time`)
+            VALUES
+                (:first_name, :last_name, :cur_day, :cur_time);";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([
+        ":first_name" => $firstName,
+        ":last_name" => $lastName,
+        ":cur_day" => $currentDay,
+        ":cur_time" => $currentTime
+    ]);
+    $stmt->closeCursor();
+
+    http_response_code(201);
+    echo json_encode(["message" => "Presence Inserted"]);
 }
